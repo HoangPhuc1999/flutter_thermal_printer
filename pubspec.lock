@@ -8,6 +8,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.5.0-nullsafety.1"
+  avprinter:
+    dependency: "direct main"
+    description:
+      path: "C:\\Users\\owner\\Documents\\AVPrinterPlugin"
+      relative: false
+    source: path
+    version: "0.0.1"
   avwidget:
     dependency: "direct main"
     description:
@@ -242,4 +249,4 @@ packages:
     version: "4.5.1"
 sdks:
   dart: ">=2.10.0-110 <2.11.0"
-  flutter: ">=1.18.0-6.0.pre <2.0.0"
+  flutter: ">=1.20.0 <2.0.0"

@@ -33,6 +33,8 @@ class MainActivity : FlutterActivity() {
 
     @Volatile
     var stopWorker = false
+    var isConnected = true
+
     private lateinit var readBuffer: ByteArray
     private var readBufferPosition = 0
     private var thread: Thread? = null
@@ -76,6 +78,10 @@ class MainActivity : FlutterActivity() {
                     val bitmap: Bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray!!.size)
                     printPhoto(bitmap)
                 }
+                "disconnectBT" -> {
+                    disconnectBT()
+                }
+
 
 
             }
@@ -105,6 +111,12 @@ class MainActivity : FlutterActivity() {
 
         return list
 
+    }
+
+
+    private fun checkConnection() : Boolean{
+        isConnected = bluetoothSocket.isConnected
+        return isConnected
     }
 
     private fun onItemClick(i: Int) {
@@ -174,16 +186,23 @@ class MainActivity : FlutterActivity() {
     @RequiresApi(Build.VERSION_CODES.KITKAT)
     fun printPhoto(bitmap: Bitmap) {
         try {
-            outputStream = bluetoothSocket.outputStream
-//         val bitmap1 = Bitmap.createBitmap(500, 200, Bitmap.Config.ARGB_8888)
-            val command = Utils.decodeBitmap(bitmap)
-            outputStream.write(command)
-            outputStream.write(PrinterCommands.ESC_ALIGN_CENTER)
+            if (checkConnection()){
+                outputStream = bluetoothSocket.outputStream
+                val command = Utils.decodeBitmap(bitmap)
+                outputStream.write(command)
+                outputStream.write(PrinterCommands.ESC_ALIGN_CENTER)
+            }
+           else {
+                Toast.makeText(applicationContext, "Connect to the printer first", Toast.LENGTH_SHORT).show()
+                Log.e("PrintTools", "the socket has closed")
+            }
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
             Log.e("PrintTools", "the file isn't exists")
         }
     }
+
+
 
 
     @Throws(IOException::class)

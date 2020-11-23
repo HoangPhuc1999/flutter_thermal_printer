@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 import 'dart:ui' as ui;
+import 'package:avprinter/avprinter.dart';
 import 'package:avwidget/av_button_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -45,6 +46,7 @@ class _MyHomePageState extends State<MyHomePage> {
   GlobalKey key2 = GlobalKey();
   GlobalKey logoKey = GlobalKey();
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -88,21 +90,35 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           Padding(
             padding: const EdgeInsets.all(16.0),
-            child: Center(
-              child: AVButton(
-                height: 40,
-                title: 'In Ảnh',
-                onPressed: () async {
-                  Uint8List bytes = await _capturePng(key);
-                  Uint8List bytes1 = await _capturePng(key1);
-                  Uint8List bytes2 = await _capturePng(key2);
-                  Uint8List bytes3 = await _capturePng(logoKey);
+            child: Padding(
+              padding: const EdgeInsets.only(left: 26.0, right: 26.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  AVButton(
+                    height: 40,
+                    title: 'In Ảnh',
+                    onPressed: () async {
+                      Uint8List bytes = await _capturePng(key);
+                      Uint8List bytes1 = await _capturePng(key1);
+                      Uint8List bytes2 = await _capturePng(key2);
+                      Uint8List bytes3 = await _capturePng(logoKey);
 
-                  printImage(bytes3);
-                  printImage(bytes);
-                  printImage(bytes1);
-                  printImage(bytes2);
-                },
+                     // Avprinter.printImage(bytes3);
+                      printImage(bytes3);
+                      printImage(bytes);
+                      printImage(bytes1);
+                      printImage(bytes2);
+                    },
+                  ),
+                  AVButton(
+                    height: 40,
+                    title: 'Ngắt kết nối',
+                    onPressed: () async {
+                      disconnectBluetooth();
+                    },
+                  ),
+                ],
               ),
             ),
           ),
@@ -342,6 +358,14 @@ class _MyHomePageState extends State<MyHomePage> {
     try {
       await platform
           .invokeMethod<dynamic>('printImage', <String, dynamic>{'byte': byte});
+    } on PlatformException catch (e) {
+      print('ERROR ERROR ERROR ===============$e');
+    }
+  }
+
+  Future<void> disconnectBluetooth() async {
+    try {
+      await platform.invokeMethod<dynamic>('disconnectBT');
     } on PlatformException catch (e) {
       print('ERROR ERROR ERROR ===============$e');
     }

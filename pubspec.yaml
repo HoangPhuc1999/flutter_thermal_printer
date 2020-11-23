@@ -23,6 +23,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  avprinter:
+    path: C:\Users\owner\Documents\AVPrinterPlugin
 
 
   # The following adds the Cupertino Icons font to your application.
