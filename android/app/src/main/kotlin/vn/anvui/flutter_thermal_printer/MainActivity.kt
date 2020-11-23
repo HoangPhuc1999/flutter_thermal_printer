@@ -33,8 +33,6 @@ class MainActivity : FlutterActivity() {
 
     @Volatile
     var stopWorker = false
-    var isConnected = true
-
     private lateinit var readBuffer: ByteArray
     private var readBufferPosition = 0
     private var thread: Thread? = null
@@ -78,17 +76,12 @@ class MainActivity : FlutterActivity() {
                     val bitmap: Bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray!!.size)
                     printPhoto(bitmap)
                 }
-                "disconnectBT" -> {
-                    disconnectBT()
-                }
-
-
-
+                
             }
         }
-
     }
 
+    // Lấy danh sách những thiết bị bluetooth đã từng kết nối//
 
     private fun getPairedList(): ArrayList<String> {
         pairedDevices = bluetoothAdapter.bondedDevices
@@ -113,12 +106,7 @@ class MainActivity : FlutterActivity() {
 
     }
 
-
-    private fun checkConnection() : Boolean{
-        isConnected = bluetoothSocket.isConnected
-        return isConnected
-    }
-
+    // chọn thiết bị trong danh sách đã từng kết nối
     private fun onItemClick(i: Int) {
         bluetoothAdapter.cancelDiscovery()
 
@@ -147,6 +135,7 @@ class MainActivity : FlutterActivity() {
         }
     }
 
+    // tạo cổng nghe từ điện thoại với máy in bluetooth
     private fun beginListenData() {
         try {
             //    final Handler handler = new Handler();
@@ -182,29 +171,23 @@ class MainActivity : FlutterActivity() {
         }
     }
 
+    // in ảnh từ dữ liệu bitmap truyền vào
 
     @RequiresApi(Build.VERSION_CODES.KITKAT)
     fun printPhoto(bitmap: Bitmap) {
         try {
-            if (checkConnection()){
-                outputStream = bluetoothSocket.outputStream
-                val command = Utils.decodeBitmap(bitmap)
-                outputStream.write(command)
-                outputStream.write(PrinterCommands.ESC_ALIGN_CENTER)
-            }
-           else {
-                Toast.makeText(applicationContext, "Connect to the printer first", Toast.LENGTH_SHORT).show()
-                Log.e("PrintTools", "the socket has closed")
-            }
+            outputStream = bluetoothSocket.outputStream
+//         val bitmap1 = Bitmap.createBitmap(500, 200, Bitmap.Config.ARGB_8888)
+            val command = Utils.decodeBitmap(bitmap)
+            outputStream.write(command)
+            outputStream.write(PrinterCommands.ESC_ALIGN_CENTER)
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
             Log.e("PrintTools", "the file isn't exists")
         }
     }
 
-
-
-
+    // Ngắt kết nối với máy in 
     @Throws(IOException::class)
     fun disconnectBT() {
         try {

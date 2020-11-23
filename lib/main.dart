@@ -165,6 +165,8 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+
+  // Widget thân vé
   Widget myTicketBody(BuildContext context) {
     return RepaintBoundary(
       key: key1,
@@ -264,6 +266,8 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+
+  // Widget vẽ qrCode
   Widget qrCode(BuildContext context) {
     return RepaintBoundary(
       key: key2,
@@ -333,6 +337,8 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+
+  // Function chuyển widget sang bytes
   Future<Uint8List> _capturePng(GlobalKey globalKey) async {
     final RenderRepaintBoundary boundary =
         globalKey.currentContext.findRenderObject() as RenderRepaintBoundary;
@@ -345,6 +351,9 @@ class _MyHomePageState extends State<MyHomePage> {
     // print(pngBytes);
   }
 
+
+
+  // Function kết nối với thiết bị bluetooth
   Future<void> connectToDevice(int index) async {
     try {
       await platform.invokeMethod<dynamic>(
@@ -354,6 +363,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  // Function in ảnh
   Future<void> printImage(Uint8List byte) async {
     try {
       await platform
