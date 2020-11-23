@@ -1,15 +1,17 @@
 import 'dart:convert';
 
+import 'package:avprinter/avprinter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_thermal_printer/blutooth_paired_devices/bluetooth_paired_bloc.dart';
+import 'package:flutter_thermal_printer/entity.dart';
 
 class PairedBluetoothDevices extends StatefulWidget {
   const PairedBluetoothDevices({Key key, this.bluetoothDeviceIndex})
       : super(key: key);
 
-  final ValueChanged<int> bluetoothDeviceIndex;
+  final ValueChanged<String> bluetoothDeviceIndex;
 
   @override
   _PairedBluetoothDevicesState createState() => _PairedBluetoothDevicesState();
@@ -87,7 +89,7 @@ class _PairedBluetoothDevicesState extends State<PairedBluetoothDevices> {
   }
 
   void displayShowModalBottomSheet(
-      BuildContext context, List<String> bluetoothDevices) {
+      BuildContext context, List<BluetoothDevice> bluetoothDevices) {
     showModalBottomSheet<dynamic>(
       elevation: 40,
       context: context,
@@ -112,7 +114,8 @@ class _PairedBluetoothDevicesState extends State<PairedBluetoothDevices> {
                 physics: const NeverScrollableScrollPhysics(),
                 itemCount: bluetoothDevices.length,
                 itemBuilder: (BuildContext context, int index) {
-                  final String bluetoothDevice = bluetoothDevices[index];
+                  final BluetoothDevice bluetoothDevice =
+                      bluetoothDevices[index];
                   return listOfType(bluetoothDevice, index);
                 },
               ),
@@ -123,17 +126,18 @@ class _PairedBluetoothDevicesState extends State<PairedBluetoothDevices> {
     );
   }
 
-  Widget listOfType(String bluetoothDevice, int index) {
+  Widget listOfType(BluetoothDevice bluetoothDevice, int index) {
     return GestureDetector(
       onTap: () {
-        widget.bluetoothDeviceIndex(index);
-        bluetoothPairedBloc.add(UpdateTitleBluetoothPairedEvent(bluetoothDevice));
+        widget.bluetoothDeviceIndex(bluetoothDevice.address);
+        bluetoothPairedBloc
+            .add(UpdateTitleBluetoothPairedEvent(bluetoothDevice.name));
         Navigator.pop(context);
       },
       child: ListTile(
         leading: const Icon(Icons.bluetooth),
         title: Text(
-          bluetoothDevice,
+          bluetoothDevice.name,
           style: const TextStyle(fontSize: 16),
         ),
       ),
@@ -142,17 +146,19 @@ class _PairedBluetoothDevicesState extends State<PairedBluetoothDevices> {
 
   Future<void> getListPairedDevice() async {
     try {
-      final dynamic result = await platform.invokeMethod<dynamic>('getList');
+//      final dynamic result = await platform.invokeMethod<dynamic>('getList');
+      final dynamic result1 = await Avprinter.getListDevices;
 
-      final List<String> devices = <String>[];
-      json.decode(result.toString()).forEach((dynamic item) {
-        devices.add(item.toString());
+      final List<BluetoothDevice> devices = <BluetoothDevice>[];
+      result1.forEach((String item) {
+        final BluetoothDevice bluetoothDevice =
+            BluetoothDevice.fromJson(json.decode(item) as Map<String, dynamic>);
+
+        devices.add(bluetoothDevice);
       });
-      print('HELLO SHITTY 0 ===== $result');
-      print('HELLO SHITTY 1 ===== $devices');
-      print('HELLO SHITTY 2 ===== ${devices[1]}');
-      print('HELLO SHITTY 2 ===== ${devices[2]}');
-      print('HELLO SHITTY 2 ===== ${devices.length}');
+
+      print(result1);
+
       bluetoothPairedBloc.add(GetBluetoothListEvent(devices));
     } on PlatformException catch (e) {
       print('ERROR ERROR ERROR ===============$e');

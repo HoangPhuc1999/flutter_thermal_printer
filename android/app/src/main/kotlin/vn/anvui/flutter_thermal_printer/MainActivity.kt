@@ -76,6 +76,11 @@ class MainActivity : FlutterActivity() {
                     val bitmap: Bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray!!.size)
                     printPhoto(bitmap)
                 }
+                "disconnectBT" -> {
+                    disconnectBT()
+                }
+
+
                 
             }
         }

@@ -8,6 +8,6 @@ class BluetoothPairedInitial extends BluetoothPairedState {}
 class ShowBluetoothPairedState extends BluetoothPairedState {
   ShowBluetoothPairedState(this.data, this.title);
 
-  final List<String> data;
+  final List<BluetoothDevice> data;
   final String title;
 }

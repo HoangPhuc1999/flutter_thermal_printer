@@ -6,7 +6,7 @@ abstract class BluetoothPairedEvent {}
 class GetBluetoothListEvent extends BluetoothPairedEvent {
   GetBluetoothListEvent(this.data);
 
-  final List<String> data;
+  final List<BluetoothDevice> data;
 }
 
 class UpdateTitleBluetoothPairedEvent extends BluetoothPairedEvent {

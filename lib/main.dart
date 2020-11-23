@@ -38,14 +38,13 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int bluetoothDeviceIndex;
+  String bluetoothDeviceAddress;
   static const MethodChannel platform =
       MethodChannel('com.flutter.bluetooth/bluetooth');
   GlobalKey key = GlobalKey();
   GlobalKey key1 = GlobalKey();
   GlobalKey key2 = GlobalKey();
   GlobalKey logoKey = GlobalKey();
-
 
   @override
   Widget build(BuildContext context) {
@@ -62,8 +61,8 @@ class _MyHomePageState extends State<MyHomePage> {
           Row(
             children: <Widget>[
               PairedBluetoothDevices(
-                bluetoothDeviceIndex: (int index) {
-                  bluetoothDeviceIndex = index;
+                bluetoothDeviceIndex: (String address) {
+                  bluetoothDeviceAddress = address;
                 },
               ),
               Container(
@@ -73,7 +72,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 height: 40,
                 title: 'Kết nối',
                 onPressed: () {
-                  connectToDevice(bluetoothDeviceIndex);
+                  Avprinter.connectDevice(bluetoothDeviceAddress);
                 },
               ),
             ],
@@ -104,18 +103,16 @@ class _MyHomePageState extends State<MyHomePage> {
                       Uint8List bytes2 = await _capturePng(key2);
                       Uint8List bytes3 = await _capturePng(logoKey);
 
-                     // Avprinter.printImage(bytes3);
-                      printImage(bytes3);
-                      printImage(bytes);
-                      printImage(bytes1);
-                      printImage(bytes2);
+                      Avprinter.printImage(bytes3);
+                      Avprinter.printImage(bytes);
+                      Avprinter.printImage(bytes1);
+                      Avprinter.printImage(bytes2);
                     },
                   ),
                   AVButton(
                     height: 40,
                     title: 'Ngắt kết nối',
                     onPressed: () async {
-                      disconnectBluetooth();
                     },
                   ),
                 ],
@@ -164,7 +161,6 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
   }
-
 
   // Widget thân vé
   Widget myTicketBody(BuildContext context) {
@@ -266,7 +262,6 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-
   // Widget vẽ qrCode
   Widget qrCode(BuildContext context) {
     return RepaintBoundary(
@@ -337,7 +332,6 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-
   // Function chuyển widget sang bytes
   Future<Uint8List> _capturePng(GlobalKey globalKey) async {
     final RenderRepaintBoundary boundary =
@@ -351,13 +345,11 @@ class _MyHomePageState extends State<MyHomePage> {
     // print(pngBytes);
   }
 
-
-
   // Function kết nối với thiết bị bluetooth
-  Future<void> connectToDevice(int index) async {
+  Future<void> connectToDevice(String address) async {
     try {
       await platform.invokeMethod<dynamic>(
-          'connectDevice', <String, dynamic>{'index': index});
+          'connectDevice', <String, dynamic>{'address': address});
     } on PlatformException catch (e) {
       print('ERROR ERROR ERROR ===============$e');
     }
